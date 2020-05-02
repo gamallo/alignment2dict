@@ -3,7 +3,7 @@
 
 ## Requirements:
 * Perl and Bash interperters
-* An aligned parallel corpus in tmx or csv format
+* The input must be an aligned parallel text in either tmx or csv format
 
 ## Description
 This system takes as entry a tmx or csv file with aligned sentences in two languages and extract a probabilistic bilingual dictionary. You can use [Web Align Tookit](http://phraseotext.univ-grenoble-alpes.fr/webAlignToolkit/) to create your aligned sentences in either tmx or csv format.
