@@ -22,6 +22,8 @@ Example of tmx input:
 ```
 sh align2dict.sh tmx en_GB gl tests/en_GB-gl.tmx
 ```
+## How to configure parameters
+By default, the system gives 5 similar words per word and only consider those word pairs with appearing in more than 5 segments. You can change the values by editing file `align2dict` and setting variables TOP (number of top similar words) and TH (minimum frequency of word pairs). 
 
 ## Output
 The output is a plain text file saved in the `./dictioraries` folder
