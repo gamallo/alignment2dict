@@ -8,6 +8,7 @@ use utf8;
 my $ling1 = shift(@ARGV);
 my $ling2 = shift(@ARGV);
 
+my $Punct =  qr/[\_\@\&\%\.\:\~\,\;\«\»\“\”\'\"\#\=\(\)\<\>\!\¡\?\¿\\\[\]\{\}\|\^\*\€\·\¬\…]/;#<string>
 my %Dico;
 my $count=1;
 while (my $entry = <STDIN>) {
@@ -20,12 +21,14 @@ while (my $entry = <STDIN>) {
     
     my @tok1 = tokenizer ($seg1);
     foreach my $tok (@tok1) {
+        if ($tok =~ /($Punct)/ || $tok =~ /\d/) {next}
 #	print STDERR "$tok\n";
 	$tok = $tok . "#" . $ling1;
 	$Dico{$tok}{$count}++;
     }
     my @tok2 = tokenizer ($seg2);
     foreach my $tok (@tok2) {
+	if ($tok =~ /($Punct)/ || $tok =~ /\d/) {next}
 	$tok = $tok . "#" . $ling2;
 	$Dico{$tok}{$count}++;
 #	print STDERR "$tok\n";
