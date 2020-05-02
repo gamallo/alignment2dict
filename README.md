@@ -11,7 +11,7 @@ This system takes as entry a tmx or csv file with aligned sentences in two langu
 ## How to use
 
 ```
-Syntax: aligned2dict <format> <lang1> <lang2>  <file> 
+Syntax: align2dict <format> <lang1> <lang2>  <file> 
       
       languages = gl, es, en, en_GB, pt,...
       format = tmx, csv
@@ -20,7 +20,7 @@ Syntax: aligned2dict <format> <lang1> <lang2>  <file>
 
 Example of tmx input:
 ```
-sh aligned2dict.sh tmx en_GB gl tests/en_GB-gl.tmx
+sh align2dict.sh tmx en_GB gl tests/en_GB-gl.tmx
 ```
 
 ## Output
