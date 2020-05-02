@@ -1,0 +1,137 @@
+#!/usr/bin/perl -w
+
+use strict; 
+binmode STDIN, ':utf8';
+binmode STDOUT, ':utf8';
+use utf8;
+
+my $ling1 = shift(@ARGV);
+my $ling2 = shift(@ARGV);
+
+my $separador = "<\/tu>" ;
+$/ = $separador;
+
+#my $Punct =  "\.\,\;\«\»\“\”\'\"\’\‘\&\=\(\)\<\>\!\¡\?\¿\[\]\{\}\|\€\·\¬\—\…\^";
+my $Punct =  qr/[\_\@\&\%\.\:\~\,\;\«\»\“\”\'\"\#\=\(\)\<\>\!\¡\?\¿\\\[\]\{\}\|\^\*\€\·\¬\…]/;#<string>
+my %Dico;
+my $count=1;
+while (my $entry = <STDIN>) {
+    (my $seg1) = ($entry =~ /<tuv xml:lang=\"$ling1\">[\n\s\t]*([^\n]+)[\n\s\t]*<\/tuv>/);
+    (my $seg2) = ($entry =~ /<tuv xml:lang=\"$ling2\">[\n\s\t]*([^\n]+)[\n\s\t]*<\/tuv>/);
+    if (!$seg1 || !$seg2){next}
+    $seg1 =~ s/^<seg>//;
+    $seg1 =~ s/<\/seg>$//;
+    $seg2 =~ s/^<seg>//;
+    $seg2 =~ s/<\/seg>$//;
+    #print STDERR "-#$seg1#\n";
+    # print STDERR "-#$seg2#\n";
+    # print STDERR  $entry;
+
+    
+    my @tok1 = tokenizer ($seg1);
+    foreach my $tok (@tok1) {
+	if ($tok =~ /($Punct)/ || $tok =~ /\d/) {next}
+	#print STDERR "$tok\n";
+	$tok = $tok . "#" . $ling1;
+	$Dico{$tok}{$count}++  ;
+    }
+    my @tok2 = tokenizer ($seg2);
+    foreach my $tok (@tok2) {
+	if ($tok =~ /($Punct)/ || $tok =~ /\d/) {next}
+	$tok = $tok . "#" . $ling2;
+	$Dico{$tok}{$count}++ ;
+#	print STDERR "$tok\n";
+    }
+
+    $count++;
+}
+
+foreach my $tok (sort keys %Dico) {
+    foreach my $seg (sort keys %{$Dico{$tok}}) {
+	print "$seg $tok $Dico{$tok}{$seg}\n";
+    } 
+}
+
+sub tokenizer {
+    my ($line) = @_;
+    $line = SeparateAllComma($line);
+    $line = SeparateAllPointComma($line);
+    $line = SeparateTwoPoint($line);
+    $line = SeparateFinalPoint($line);
+    $line = SeparateAllBracket($line);
+    $line = SeparateAspas($line);
+    $line = SeparateSeveral($line);
+
+    $line = lc $line;
+
+    my @saida = split(" ", $line);
+    return @saida;
+
+}
+
+
+
+sub SeparateSeveral {
+    my ($x) = @_;
+
+       $x =~ s/\</ \< /g;
+       $x =~ s/\>/ \> /g;
+       $x =~ s/\=/ \= /g;
+       $x =~ s/\'/ \' /g;
+       $x =~ s/\`/ \` /g;
+       $x =~ s/\?/ \? /g;
+       $x =~ s/\#/ \# /g;
+       $x =~ s/\!/ \! /g;
+       $x =~ s/\¡/ \¡ /g;
+       $x =~ s/\¿/ \¿ /g;
+       return $x;
+}
+
+sub SeparateAllComma {
+    my ($x) = @_;
+
+       $x =~ s/\,/ \,/g;
+       return $x;
+}
+
+
+sub SeparateAllPointComma {
+    my ($x) = @_;
+
+       $x =~ s/\;/ \;/g;
+       return $x;
+}
+
+sub SeparateTwoPoint {
+    my ($x) = @_;
+
+       $x =~ s/\:/ \:/g;
+       return $x;
+}
+
+sub SeparateAllBracket {
+    my ($x) = @_;
+
+       $x =~ s/\(/ \( /g;
+       $x =~ s/\)/ \) /g;
+       return $x;
+}
+
+
+sub SeparateFinalPoint {
+    my ($x) = @_;
+
+       $x =~ s/\. [\w]*/ \. /g;
+       $x =~ s/\.$/ \./g;
+       return $x;
+}
+
+sub SeparateAspas {
+    my ($x) = @_;
+
+       $x =~ s/\"[ ]*/\" /g;
+       $x =~ s/[ ]*\"/ \"/g;
+       return $x;
+}
+
+

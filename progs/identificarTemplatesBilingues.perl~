@@ -1,0 +1,99 @@
+#!/usr/bin/perl
+
+# LE O FICHEIRO FREQ_TEMPLATES E DEIXA AQUELES TEMPLATES QUE TÊM UMA FREQUENCIA ENTRE DOUS THRESHOLDS (E PARTILHAM PELO MENOS 1 PAR DE PALAVRAS BILINGUES),
+
+
+
+#lê um ficheiro com todos os freqs (cntx pal freq) (pipe)
+# os argumentos sao dous thresholds e duas linguas: S G 
+
+#$file = shift(@ARGV);
+#open (INPUT, $file) or die "O ficheiro não pode ser aberto: $!\n";
+
+
+
+##threshold minimo: 2  (num. minimo de palavras)
+$th1 = shift(@ARGV);
+#threshold maximo 2000
+$th2 = shift(@ARGV);
+#theshold de palavras: 5
+$th3 = shift(@ARGV);
+
+$L1 = shift(@ARGV); #lingua fonte: S
+$L2 = shift(@ARGV); #lingua alvo: G
+
+
+
+$freq="";
+$numPals=0;
+while ($line = <STDIN>) {
+      chomp($line);
+      ($expr1, $expr2, $freq) = split (" ", $line);
+      
+       if  ($expr1 =~ /_down|_up/) {
+          $template = $expr1 ;
+          $word = $expr2
+       }
+       elsif ($expr2 =~ /_down|_up/) {
+          $template = $expr2 ;
+          $word = $expr1;
+       }
+     
+      $Templates{$template} .= "|" . $word;
+      if (!defined $Words{$word}) {
+	  $numPals++;
+      }
+      $Words{$word}++;
+      $Dico{$template}{$word} = $freq;
+
+      ($tmp,$ling) = split ('\#', $word) ;
+      $Ling{$template}{$ling}++;
+
+      #print STDERR "$Template{$cntx2}\n";
+}
+
+$countMONO=0;
+$countMIN=0;
+$countMAX=0;
+$count=0;
+foreach $t (sort keys %Templates) {
+   
+  (@words) = split ('\|', $Templates{$t});
+    #$media = ($#words / $numPals);
+     
+    if ( (!defined $Ling{$t}{$L1}) || (!defined $Ling{$t}{$L2}) ) {
+      $countMONO++;
+    }
+  
+    elsif ($#words <= $th1) {
+      	$countMIN++;
+       # print STDERR "#MIN: $t#\n";
+         
+    } 
+    elsif ($#words >= $th2) {
+      	$countMAX++;
+        print STDERR "#MAX: $t#\n";
+    }   
+    else {
+      
+       foreach $w (keys %{$Dico{$t}}) {  
+	 if ( ($Dico{$t}{$w} ne "") && ($Words{$w} >= $th3) ) {
+            print "$t $w $Dico{$t}{$w} \n";
+            $Found{$t}++;
+	  }
+       }
+       if (defined $Found{$t}) {
+          $count++;
+       }      
+    }
+  
+      
+} 
+
+
+print STDERR "MONO cntx removidos: ##$countMONO##\n";
+print STDERR "MIN cntx removidos: ##$countMIN##\n";
+print STDERR "MAX cntx removidos: ##$countMAX##\n";
+print STDERR "numero total de pals: ##$numPals##\n";
+print STDERR "numero de templates: ##$count##\n";
+print STDERR "foi gerado o ficheiro dos templates\n";
