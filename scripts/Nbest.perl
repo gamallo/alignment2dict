@@ -2,7 +2,7 @@
 
 $N=shift(@ARGV);
 
-$count = 0;
+#$count = 0;
 
 while (<>) {
   chop $_;
@@ -16,7 +16,7 @@ while (<>) {
 
 foreach $p1 (keys %dico) {
     
-     $Count{$p1} = 0;
+     $Count{$p1} = 1;
      foreach $p2 (sort {$dico{$p1}{$b} <=>
                       $dico{$p1}{$a} }
                   keys %{ $dico{$p1} }) {
