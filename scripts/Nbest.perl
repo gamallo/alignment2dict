@@ -5,10 +5,13 @@ $N=shift(@ARGV);
 #$count = 0;
 
 while (<>) {
-  chop $_;
-  ($pal1, $pal2, $sim) = split (" ", $_) ; 
-  $pal1 =~ s/\#[\w]+$//;
-  $pal2 =~ s/\#[\w]+$//;
+  chomp $_;
+  ($pal1, $pal2, $sim) = split (" ", $_) ;
+  #print STDERR "$pal1 - $pal2\n";
+  ($pal1, $tmp) = split ('\#', $pal1);
+  ($pal2, $tmp) = split ('\#', $pal2);
+  #$pal2 =~ s/\#[\w]+$//;
+  #print STDERR "$pal1 - $pal2\n";
   $dico{$pal1}{$pal2} = $sim;
    
   
@@ -21,10 +24,11 @@ foreach $p1 (keys %dico) {
                       $dico{$p1}{$a} }
                   keys %{ $dico{$p1} }) {
 
-         $p2 =~ s/\#[\w]+$//;
-	 #print STDERR "#$p1# - #$p2# - $dico{$p1}{$p2}\n";
+        
+	# print STDERR "#$p1# - #$p2# - $dico{$p1}{$p2}\n";
           
-           if ($Count{$p1} <= $N){
+	 if ($Count{$p1} <= $N){
+	           print "$p1 $p2 $dico{$p1}{$p2}\n";
                    $Count{$p1}++;
 	   }
      }
